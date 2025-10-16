@@ -1,30 +1,27 @@
 import React from 'react'
 import { restaurants } from './assets/mock.js'
+import { Layout } from './components/Layout'
+import { Tabs } from './components/Tabs'
+import { RestaurantView } from './components/RestaurantView'
 
 export function App(): React.JSX.Element {
+  const [activeId, setActiveId] = React.useState<string>(restaurants[0]?.id ?? '')
+
+  const tabs = React.useMemo(
+    () => restaurants.map((r: { id: string; name: string }) => ({ id: r.id, label: r.name })),
+    [],
+  )
+
+  const activeRestaurant = React.useMemo(
+    () => restaurants.find((r: { id: string }) => r.id === activeId),
+    [activeId],
+  )
+
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Рестораны</h1>
-      {restaurants.map((restaurant) => (
-        <section key={restaurant.id} style={{ marginBottom: 32 }}>
-          <h2 style={{ marginBottom: 8 }}>{restaurant.name}</h2>
-
-          <h3 style={{ marginTop: 16, marginBottom: 8 }}>Блюда</h3>
-          <ul>
-            {restaurant.menu.map((item: { id: string; name: string }) => (
-              <li key={item.id}>{item.name}</li>
-            ))}
-          </ul>
-
-          <h3 style={{ marginTop: 16, marginBottom: 8 }}>Отзывы</h3>
-          <ul>
-            {restaurant.reviews.map((review: { id: string; text: string }) => (
-              <li key={review.id}>{review.text}</li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </div>
+    <Layout>
+      <Tabs tabs={tabs} activeId={activeId} onChange={setActiveId} />
+      <RestaurantView restaurant={activeRestaurant} />
+    </Layout>
   )
 }
 
